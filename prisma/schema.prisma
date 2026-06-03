@@ -11,3 +11,73 @@ generator client {
 datasource db {
   provider = "sqlite"
 }
+
+// Staff who can log in to the dashboard
+// Better Auth will add its own fields alongside this
+model User {
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Better Auth relations — required, don't remove these
+  sessions      Session[]
+  accounts      Account[]
+}
+
+// Better Auth session table — managed automatically
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Better Auth account table — managed automatically
+model Account {
+  id           String    @id @default(cuid())
+  accountId    String
+  providerId   String
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken  String?
+  refreshToken String?
+  expiresAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+// A physical table in the restaurant
+model Table {
+  id           String        @id @default(cuid())
+  number       Int           @unique   // table number shown on floor plan
+  capacity     Int                     // max number of seats
+  isActive     Boolean       @default(true)
+  reservations Reservation[]
+}
+
+// A guest reservation
+model Reservation {
+  id          String   @id @default(cuid())
+  guestName   String
+  guestEmail  String
+  guestPhone  String?
+  partySize   Int
+  date        DateTime             // the full date + time of the booking
+  notes       String?              // special requests
+  status      String  @default("pending")  // pending | confirmed | cancelled | seated | completed
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Each reservation is assigned one table
+  table       Table    @relation(fields: [tableId], references: [id])
+  tableId     String
+}
