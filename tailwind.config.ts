@@ -13,7 +13,7 @@ const config: Config = {
     require('daisyui')
   ],
   daisyui: {
-    themes: ['light', 'dark'],  // we'll use light for public, dark for dashboard
+    themes: ['light', 'dark'],
   }
 }
 
