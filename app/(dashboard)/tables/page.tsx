@@ -1,12 +1,7 @@
-import { prisma } from "@/lib/db";
+import { getTables } from "@/lib/db/table";
 
 export default async function TablesPage() {
-  const tables = await prisma.table.findMany({
-    orderBy: { number: "asc" },
-    include: {
-      _count: { select: { reservations: true } },
-    },
-  });
+  const tables = await getTables();
 
   return (
     <div>

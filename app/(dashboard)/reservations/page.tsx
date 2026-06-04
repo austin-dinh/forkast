@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/db";
+import { getReservations } from "@/lib/db/reservation";
 
 const STATUS_BADGE: Record<string, string> = {
   pending: "badge-warning",
@@ -9,10 +9,7 @@ const STATUS_BADGE: Record<string, string> = {
 };
 
 export default async function ReservationsPage() {
-  const reservations = await prisma.reservation.findMany({
-    include: { table: true },
-    orderBy: { date: "asc" },
-  });
+  const reservations = await getReservations();
 
   return (
     <div>
